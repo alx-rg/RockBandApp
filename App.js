@@ -1,24 +1,28 @@
 import * as React from 'react';
-import { Text, View, FlatList } from 'react-native';
+import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from 'react-native-vector-icons'
 import * as data from './metal.json'
-
+import styles from './styles';
 
 function BandsScreen() {
   const renderBand = ({ item }) => (
-    <View style={{ marginVertical: 10 }}>
-    <Text key={item.id} style={{ fontWeight: 'bold' }}>
-      {item.split === "-" ? (
-        <Text>{item.band_name}</Text>
-      ) : (
-        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'gray', color: 'gray' }}>{item.band_name}</Text>
-      )}
-    </Text>
-      <Text>{item.origin}</Text>
-      <Text>{item.formed}</Text>
-      <Text>{(item.fans * 1000).toLocaleString()}</Text>
+    <View style={{ marginVertical: 10, flexDirection: 'column'}}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text key={item.id} style={{ fontWeight: 'bold', color: 'white' }}>
+          {item.split === "-" ? (
+            <Text>{item.band_name}</Text>
+          ) : (
+            <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'gray', color: 'gray' }}>{item.band_name}</Text>
+          )}
+        </Text>
+        <Text style={{color: 'grey'}}>{item.origin}</Text>
+      </View>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 5}}>
+        <Text style={{color: 'white'}}>{item.formed}</Text>
+        <Text style={{color: 'white'}}>{(item.fans * 1000).toLocaleString()}</Text>
+      </View>
     </View>
   );
 
@@ -26,20 +30,20 @@ function BandsScreen() {
     <View
       style={{
         height: 1,
-        width: "86%",
-        backgroundColor: "#CED0CE",
-        marginLeft: "14%",
+        width: "100%",
+        backgroundColor: "#CED0CE"
       }}
     />
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'black'}}>
       <FlatList
         data={data.default}
         renderItem={renderBand}
         keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
         ItemSeparatorComponent={renderSeparator}
+        style={{ paddingLeft: 20, paddingRight: 20}}
       />
     </View>
   );
@@ -47,42 +51,54 @@ function BandsScreen() {
 
 
 function StatsScreen() {
+  // Create new array with spread operator
+  const allBands = [...data.default]
   // Filter active bands
-  const totalBands = data.default.length;
-  const activeBands = data.default.filter((band) => band.split === '-');
-  const splitBands = data.default.length - activeBands.length;
-
-  // Map to extract required information
-
-  const totalFans = (data.default.reduce((total, band) => total + band.fans, 0) * 1000).toLocaleString();
-
-  // const fans = data.default.reduce((acc, band) => acc + band.fans, 0);
-  const countries = activeBands.map((band) => band.origin);
-
+  const totalBands = allBands.length;
+  const activeBands = allBands.filter((band) => band.split === '-');
+  const splitBands = allBands.length - activeBands.length;
+  const totalFans = (allBands.reduce((total, band) => total + band.fans, 0) * 1000).toLocaleString();
+  const countries = allBands.map((band) => band.origin);
   // Count the number of bands for each style
-  const styleCounts = data.default.reduce((acc, band) => {
+  const styleCounts = allBands.reduce((acc, band) => {
     const styles = band.style.split(",");
     for (const style of styles) {
       acc[style] = (acc[style] || 0) + 1;
     }
     return acc;
   }, {});
-
   // Count the number of unique styles
   const numStyles = Object.keys(styleCounts).length;
-
   // Compute statistics using reduce
   const distinctCountries = new Set(countries).size;
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>METAL🤘🎸</Text>
-      <Text>Count: {totalBands} </Text>
-      <Text>Fans: {totalFans} </Text>
-      <Text>Countries: {distinctCountries} </Text>
-      <Text>Active: {activeBands.length} </Text>
-      <Text>Split: {splitBands} </Text>
-      <Text>Styles: {numStyles} </Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black'}}>
+      <Text style={styles.title}>METAL🤘🎸</Text>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.label}>Count:</Text>
+        <Text style={styles.value}> {totalBands}</Text>
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.label}>Fans:</Text>
+        <Text style={styles.value}> {totalFans}</Text>
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.label}>Countries:</Text>
+        <Text style={styles.value}> {distinctCountries}</Text>
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.label}>Active::</Text>
+        <Text style={styles.value}> {activeBands.length}</Text>
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.label}>Split:</Text>
+        <Text style={styles.value}> {splitBands}</Text>
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={styles.label}>Styles:</Text>
+        <Text style={styles.value}> {numStyles}</Text>
+      </View>
     </View>
   );
 }
@@ -131,9 +147,11 @@ function StylesScreen() {
 
 const Tab = createBottomTabNavigator();
 
+
+
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer styles={{backgroundColor: 'black'}}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -147,9 +165,12 @@ export default function App() {
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: 'tomato', // Active/focussed color
-          tabBarInactiveTintColor: 'gray' // Inactive color
-          })}
+          tabBarActiveTintColor: '#f00', // Active/focussed color
+          tabBarInactiveTintColor: '#600', // Inactive color
+          tabBarStyle: { backgroundColor: 'black' },
+          tabBarInactiveBackgroundColor: '#000',
+          tabBarActiveBackgroundColor: '#111',
+         })}
       >
         <Tab.Screen name="Bands" component={BandsScreen} />
         <Tab.Screen name="Stats" component={StatsScreen} />
