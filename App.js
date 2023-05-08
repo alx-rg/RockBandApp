@@ -7,12 +7,44 @@ import * as data from './metal.json'
 
 
 function BandsScreen() {
+  const renderBand = ({ item }) => (
+    <View style={{ marginVertical: 10 }}>
+    <Text key={item.id} style={{ fontWeight: 'bold' }}>
+      {item.split === "-" ? (
+        <Text>{item.band_name}</Text>
+      ) : (
+        <Text style={{ textDecorationLine: 'line-through', textDecorationColor: 'gray', color: 'gray' }}>{item.band_name}</Text>
+      )}
+    </Text>
+      <Text>{item.origin}</Text>
+      <Text>{item.formed}</Text>
+      <Text>{(item.fans * 1000).toLocaleString()}</Text>
+    </View>
+  );
+
+  const renderSeparator = () => (
+    <View
+      style={{
+        height: 1,
+        width: "86%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "14%",
+      }}
+    />
+  );
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Bands!</Text>
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={data.default}
+        renderItem={renderBand}
+        keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
+        ItemSeparatorComponent={renderSeparator}
+      />
     </View>
   );
 }
+
 
 function StatsScreen() {
   // Filter active bands
@@ -22,12 +54,10 @@ function StatsScreen() {
 
   // Map to extract required information
 
-  const totalFans = data.default.reduce((total, band) => total + band.fans, 0) * 1000;
-  const formattedFans = totalFans.toLocaleString();
+  const totalFans = (data.default.reduce((total, band) => total + band.fans, 0) * 1000).toLocaleString();
 
   // const fans = data.default.reduce((acc, band) => acc + band.fans, 0);
   const countries = activeBands.map((band) => band.origin);
-  const formedYears = activeBands.map((band) => parseInt(band.formed));
 
   // Count the number of bands for each style
   const styleCounts = data.default.reduce((acc, band) => {
@@ -42,14 +72,13 @@ function StatsScreen() {
   const numStyles = Object.keys(styleCounts).length;
 
   // Compute statistics using reduce
-  // const totalFans = fans.reduce((acc, val) => acc + val, 0) * 1000;
   const distinctCountries = new Set(countries).size;
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>METAL🤘🎸</Text>
       <Text>Count: {totalBands} </Text>
-      <Text>Fans: {formattedFans} </Text>
+      <Text>Fans: {totalFans} </Text>
       <Text>Countries: {distinctCountries} </Text>
       <Text>Active: {activeBands.length} </Text>
       <Text>Split: {splitBands} </Text>
@@ -106,22 +135,21 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-  //       screenOptions={({ route }) => ({
-  //         tabBarIcon: ({ focused, color, size }) => {
-  //           let iconName;
-
-  //           if (route.name === 'Bands') {
-  //             iconName = focused ? 'ios-information-circle' : 'ios-information-circle-outline';
-  //           } else if (route.name === 'Stats') {
-  //             iconName = focused ? 'ios-list-box' : 'ios-list';
-  //           } else if (route.name === 'Styles') {
-  //             iconName = focused ? 'ios-star' : 'ios-star-outline';
-  //           }
-  //           return <Ionicons name={iconName} size={size} color={color} />;
-  //         },
-  //         tabBarActiveTintColor: 'tomato', // Active/focussed color
-  //         tabBarInactiveTintColor: 'gray' // Inactive color
-  // })}
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+            if (route.name === 'Bands') {
+              iconName = focused ? 'people' : 'people-outline';
+            } else if (route.name === 'Stats') {
+              iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+            } else if (route.name === 'Styles') {
+              iconName = focused ? 'musical-notes' : 'musical-notes-outline';
+            }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato', // Active/focussed color
+          tabBarInactiveTintColor: 'gray' // Inactive color
+          })}
       >
         <Tab.Screen name="Bands" component={BandsScreen} />
         <Tab.Screen name="Stats" component={StatsScreen} />
