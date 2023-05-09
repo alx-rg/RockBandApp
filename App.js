@@ -118,7 +118,7 @@ function StylesScreen() {
   // Render each style with a separator
   const renderItem = ({ item }) => (
     <View sortedStyles={sortedStyles.item}>
-      <Text>{item}</Text>
+      <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold', paddingBottom: 10, paddingTop: 10}}>{item}</Text>
     </View>
   );
 
@@ -126,15 +126,13 @@ function StylesScreen() {
     <View
       style={{
         height: 1,
-        width: "86%",
         backgroundColor: "#CED0CE",
-        marginLeft: "14%"
       }}
     />
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'black'}}>
       <FlatList
         data={sortedStyles}
         renderItem={renderItem}
@@ -147,7 +145,18 @@ function StylesScreen() {
 
 const Tab = createBottomTabNavigator();
 
-
+{/* <Stack.Navigator
+initialRouteName="Home"
+screenOptions={{
+headerStyle: {
+backgroundColor: '#e1154f',
+},
+headerTintColor: '#fff',
+headerTitleStyle: {
+fontWeight: 'bold',
+},
+}}
+> */}
 
 export default function App() {
   return (
@@ -170,6 +179,13 @@ export default function App() {
           tabBarStyle: { backgroundColor: 'black' },
           tabBarInactiveBackgroundColor: '#000',
           tabBarActiveBackgroundColor: '#111',
+          headerStyle: {
+            backgroundColor: 'black',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+            fontWeight: 'bold',
+            }
          })}
       >
         <Tab.Screen name="Bands" component={BandsScreen} />
